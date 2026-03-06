@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Sparkles, TrendingUp, AlertCircle, CheckCircle2, Zap } from 'lucide-react';
+import { generateInsightPDF } from '@/utils/pdfGenerator';
 
 export default function AIInsights() {
     const insights = [
@@ -40,14 +41,14 @@ export default function AIInsights() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
                         className={`glass-card p-6 rounded-2xl border-t-4 ${insight.severity === 'high' ? 'border-t-red-500' :
-                                insight.severity === 'medium' ? 'border-t-yellow-500' :
-                                    'border-t-green-500'
+                            insight.severity === 'medium' ? 'border-t-yellow-500' :
+                                'border-t-green-500'
                             }`}
                     >
                         <div className="flex items-start justify-between mb-4">
                             <div className={`p-2 rounded-lg ${insight.severity === 'high' ? 'bg-red-500/10 text-red-500' :
-                                    insight.severity === 'medium' ? 'bg-yellow-500/10 text-yellow-500' :
-                                        'bg-green-500/10 text-green-500'
+                                insight.severity === 'medium' ? 'bg-yellow-500/10 text-yellow-500' :
+                                    'bg-green-500/10 text-green-500'
                                 }`}>
                                 <insight.icon className="w-6 h-6" />
                             </div>
@@ -78,7 +79,18 @@ export default function AIInsights() {
                     <p className="text-gray-400 text-sm leading-relaxed mb-8">
                         Our neural model suggests that normalizing response times across Adyar and Velachery will improve local infrastructure longevity by <strong>14%</strong> over the next 24 months.
                     </p>
-                    <button className="px-8 py-3 bg-neon-purple text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all">
+                    <button
+                        onClick={() => {
+                            const data = insights.map(i => ({
+                                title: i.title,
+                                description: i.description,
+                                severity: i.severity,
+                                confidence: "98.2%"
+                            }));
+                            generateInsightPDF(data);
+                        }}
+                        className="px-8 py-3 bg-neon-purple text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all active:scale-95"
+                    >
                         Generate Quarterly Projection
                     </button>
                 </div>

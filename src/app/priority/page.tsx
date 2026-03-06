@@ -72,11 +72,13 @@ export default function PriorityPage() {
 
     const filteredAndSortedAssets = useMemo(() => {
         if (!assets) return [];
-        let result = assets.filter(a =>
-            a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            a.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            a.asset_id.toString().includes(searchTerm)
-        );
+        let result = assets?.filter(a =>
+            a.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            a.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            a.asset_id?.toString().includes(searchTerm) ||
+            a.asset_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            a.status?.toLowerCase().includes(searchTerm.toLowerCase())
+        ) || [];
 
         if (sortField) {
             result.sort((a: any, b: any) => {

@@ -2,9 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { useAssetStore } from '@/store/useAssetStore';
-import { RefreshCcw, Search, X, AlertCircle } from 'lucide-react';
+import { RefreshCcw, Search, X, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import StatusDropdown from '@/components/dashboard/StatusDropdown';
 
 function AdminPanelContent() {
     const { assets, updateAsset, recalculatePriority, syncWithCSV, isSyncing } = useAssetStore();
@@ -12,6 +13,8 @@ function AdminPanelContent() {
     const highlightId = searchParams.get('id');
 
     const [searchTerm, setSearchTerm] = useState(highlightId || '');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 8;
 
     const statuses = [
         'Operational',
@@ -25,11 +28,25 @@ function AdminPanelContent() {
         updateAsset(id, { [field]: value });
     };
 
-    const filteredAssets = assets.filter(a =>
-        a.asset_id.toString().includes(searchTerm) ||
-        a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        a.asset_type.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredAssets = assets?.filter(a =>
+        a.asset_id?.toString().includes(searchTerm) ||
+        a.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        a.asset_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        a.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        a.status?.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
+
+    const totalPages = Math.ceil(filteredAssets.length / itemsPerPage);
+    const paginatedAssets = filteredAssets.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
     );
+
+    // Reset to page 1 when search changing
+    const handleSearchChange = (val: string) => {
+        setSearchTerm(val);
+        setCurrentPage(1);
+    };
 
     return (
         <div className="space-y-8 pb-32">
@@ -50,11 +67,11 @@ function AdminPanelContent() {
                             type="text"
                             placeholder="Filter by ID/Name..."
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e) => handleSearchChange(e.target.value)}
                             className="bg-transparent border-none focus:ring-0 text-xs text-white placeholder:text-gray-600 font-mono"
                         />
                         {searchTerm && (
-                            <button onClick={() => setSearchTerm('')}><X className="w-3 h-3 text-gray-500" /></button>
+                            <button onClick={() => handleSearchChange('')}><X className="w-3 h-3 text-gray-500" /></button>
                         )}
                     </div>
                     <button
@@ -89,7 +106,7 @@ function AdminPanelContent() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/[0.03]">
-                            {filteredAssets.map((asset) => {
+                            {paginatedAssets.map((asset) => {
                                 const isHighlighted = highlightId === asset.asset_id.toString();
                                 return (
                                     <motion.tr
@@ -108,16 +125,11 @@ function AdminPanelContent() {
                                             <span className="text-xs text-gray-400 font-medium">{asset.location}</span>
                                         </td>
                                         <td className="p-5">
-                                            <select
+                                            <StatusDropdown
                                                 value={asset.status}
-                                                onChange={(e) => handleUpdate(asset.asset_id, 'status', e.target.value)}
-                                                className={`text-[10px] font-bold px-3 py-1.5 rounded-lg border appearance-none cursor-pointer focus:ring-0 focus:outline-none transition-all ${asset.status === 'Operational' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                                                    asset.status === 'Severely Damaged' ? 'bg-red-500/10 text-red-400 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.1)]' :
-                                                        'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
-                                                    }`}
-                                            >
-                                                {statuses.map(s => <option key={s} value={s} className="bg-[#1A0B2E] text-white font-mono">{s}</option>)}
-                                            </select>
+                                                options={statuses}
+                                                onChange={(val) => handleUpdate(asset.asset_id, 'status', val)}
+                                            />
                                         </td>
                                         <td className="p-5 tabular-nums">
                                             <div className="flex flex-col gap-1.5">
@@ -141,6 +153,34 @@ function AdminPanelContent() {
                             })}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Pagination Controls */}
+                <div className="px-6 py-4 bg-white/[0.02] border-t border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">
+                            Showing {Math.min(filteredAssets.length, (currentPage - 1) * itemsPerPage + 1)} - {Math.min(filteredAssets.length, currentPage * itemsPerPage)} of {filteredAssets.length} Units
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                            disabled={currentPage === 1}
+                            className={`p-2 rounded-lg glass-card border-white/10 text-white transition-all ${currentPage === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-neon-purple/20'}`}
+                        >
+                            <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <div className="px-4 py-2 glass-card rounded-xl border-white/10 text-[10px] font-black text-white uppercase tracking-widest">
+                            Page <span className="text-neon-purple text-glow">{currentPage}</span> <span className="text-gray-600">of</span> {totalPages || 1}
+                        </div>
+                        <button
+                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                            disabled={currentPage === totalPages || totalPages === 0}
+                            className={`p-2 rounded-lg glass-card border-white/10 text-white transition-all ${currentPage === totalPages || totalPages === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-neon-purple/20'}`}
+                        >
+                            <ChevronRight className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
             </div>
 

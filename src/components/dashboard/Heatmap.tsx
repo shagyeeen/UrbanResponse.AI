@@ -63,9 +63,9 @@ export default function ChennaiHeatmap() {
                     style={{ transformOrigin: 'center' }}
                 >
                     <svg
-                        viewBox="120 120 660 360"
+                        viewBox="0 0 1000 600"
                         preserveAspectRatio="xMidYMid meet"
-                        className="w-full h-full drop-shadow-[0_0_50px_rgba(168,85,247,0.1)] pointer-events-none"
+                        className="w-full h-full drop-shadow-[0_0_50px_rgba(168,85,247,0.1)] pointer-events-none overflow-visible"
                     >
                         {regions.map((region) => (
                             <motion.g

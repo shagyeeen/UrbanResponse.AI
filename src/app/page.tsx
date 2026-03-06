@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 import { useAssetStore } from '@/store/useAssetStore';
 import StatCard from '@/components/dashboard/StatCard';
 import PriorityPanel from '@/components/dashboard/PriorityPanel';
 import ChennaiHeatmap from '@/components/dashboard/Heatmap';
 import AssetGrid from '@/components/dashboard/AssetGrid';
+import NotificationPanel from '@/components/dashboard/NotificationPanel';
 import {
   Waves,
   TrafficCone,
@@ -24,35 +24,15 @@ import {
   Activity,
   ShieldCheck
 } from 'lucide-react';
-import Papa from 'papaparse';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type TabType = 'OVERVIEW' | 'Bridge' | 'Road' | 'Drainage' | 'Pipeline' | 'Street Light' | 'Traffic Light';
 
 export default function Dashboard() {
-  const { assets, setAssets, recalculatePriority } = useAssetStore();
+  const { assets, recalculatePriority } = useAssetStore();
   const [activeTab, setActiveTab] = useState<TabType>('OVERVIEW');
-
-  useEffect(() => {
-    const loadCSV = async () => {
-      try {
-        const response = await fetch('/data/chennai-infrastructure.csv');
-        const csvText = await response.text();
-
-        Papa.parse(csvText, {
-          header: true,
-          dynamicTyping: true,
-          skipEmptyLines: true,
-          complete: (results: Papa.ParseResult<any>) => {
-            setAssets(results.data as any[]);
-            recalculatePriority();
-          },
-        });
-      } catch (err) {
-        console.error("CSV Loading Error:", err);
-      }
-    };
-    loadCSV();
-  }, [setAssets, recalculatePriority]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const tabs: { type: TabType; label: string; icon: any }[] = [
     { type: 'OVERVIEW', label: 'Overview', icon: LayoutDashboard },
@@ -65,6 +45,16 @@ export default function Dashboard() {
   ];
 
   const getAssetCount = (type: string) => assets.filter(a => a.asset_type === type).length;
+
+  const filteredAssets = assets.filter(a =>
+    a.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    a.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    a.asset_id?.toString().includes(searchTerm) ||
+    a.asset_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    a.status?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const criticalCount = assets.filter(a => a.priority_score > 85).length;
 
   return (
     <div className="space-y-8 pb-32">
@@ -88,12 +78,27 @@ export default function Dashboard() {
             <input
               type="text"
               placeholder="Query Assets..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="bg-transparent border-none focus:ring-0 text-xs w-32 placeholder:text-gray-600 font-mono text-white ml-2"
             />
           </div>
-          <div className="w-10 h-10 rounded-full glass-card flex items-center justify-center border-purple-500/20 relative cursor-pointer hover:bg-neon-purple/20 transition-all">
-            <Bell className="w-5 h-5 text-purple-400" />
-            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-[#1A0B2E] animate-pulse" />
+          <div className="relative">
+            <div
+              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+              className="w-10 h-10 rounded-full glass-card flex items-center justify-center border-purple-500/20 relative cursor-pointer hover:bg-neon-purple/20 transition-all"
+            >
+              <Bell className="w-5 h-5 text-purple-400" />
+              {criticalCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 rounded-full border-2 border-[#1A0B2E] flex items-center justify-center text-[9px] font-black text-white px-1 shadow-[0_0_10px_#ef4444] animate-pulse">
+                  {criticalCount}
+                </span>
+              )}
+            </div>
+            <NotificationPanel
+              isOpen={isNotificationsOpen}
+              onClose={() => setIsNotificationsOpen(false)}
+            />
           </div>
         </div>
       </div>
@@ -163,7 +168,7 @@ export default function Dashboard() {
                 <div className="px-4 py-2 glass-card rounded-lg text-[10px] font-mono font-bold text-green-400">STATUS: OPTIMAL</div>
               </div>
             </div>
-            <AssetGrid assets={assets} type={activeTab} />
+            <AssetGrid assets={filteredAssets} type={activeTab} />
           </motion.div>
         )}
       </AnimatePresence>
