@@ -1,6 +1,4 @@
-# 🏙️ UrbanResponse.AI
-
-![UrbanResponse.AI Banner](/public/assets/banner.png)
+# UrbanResponse.AI
 
 > **"Redefining Urban Resilience through Intelligent Telemetry & AI-Driven Response."**
 
@@ -11,7 +9,7 @@
 
 ---
 
-## 🌟 The Vision
+## The Vision
 
 **UrbanResponse.AI** is a futuristic, holographic command center designed for the City of Chennai. It transforms raw infrastructure data into actionable strategic insights, enabling rapid response to urban decay, traffic congestion, and critical utility failures.
 
@@ -19,26 +17,26 @@ Built with a **Cyber-Premium aesthetic**, the platform utilizes real-time teleme
 
 ---
 
-## 🚀 Core Pillars
+## Core Pillars
 
-### 📊 Strategic Command Dashboard
+### Strategic Command Dashboard
 A high-fidelity interface providing granular visibility into:
 - **Infrastructure Sectors**: Bridges, Roadways, Drainage, Pipelines, and Lighting.
 - **Real-time Telemetry**: Active response status and health metrics.
 - **Global Status Monitoring**: System-wide scans with immediate alert capabilities.
 
-### 🧬 AI-Driven Prioritization
+### AI-Driven Prioritization
 Leveraging **Groq's LPU™ technology**, UrbanResponse.AI autonomously evaluates incident gravity based on:
 - Population density impact.
 - Cascading failure risks.
 - Fleet proximity and response time.
 
-### 🗺️ Geospatial Intelligence
+### Geospatial Intelligence
 Interactive **Heatmaps** and **Spatial Risk Overlays** visualize the city's pulse, highlighting critical zones and allowing for predictive maintenance.
 
 ---
 
-## 🛠️ Tech Architecture
+## Tech Architecture
 
 ```mermaid
 graph TD
@@ -52,7 +50,7 @@ graph TD
 
 ---
 
-## ⚙️ Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 18+
@@ -85,7 +83,7 @@ Open [http://localhost:3000](http://localhost:3000) to enter the command center.
 
 ---
 
-## 🛣️ Roadmap
+## Roadmap
 
 - [ ] **Phase 1**: Real-time Sensor Integration (IoT).
 - [ ] **Phase 2**: Mobile Response App for Field Units.
@@ -94,12 +92,12 @@ Open [http://localhost:3000](http://localhost:3000) to enter the command center.
 
 ---
 
-## 🛡️ Security & Compliance
+## Security & Compliance
 
 UrbanResponse.AI is designed with **Privacy-First** principles. All infrastructure telemetry is handled securely, ensuring city data remains protected while enabling efficient public service delivery.
 
 ---
 
 <p align="center">
-  Developed with ❤️ for the Future of Chennai.
+  Developed by Smart Nova
 </p>

@@ -25,7 +25,9 @@ export async function POST(request: Request) {
             4. Estimated Time Span
             5. Safety Protocols
 
-            Keep the tone authoritative, technical, and concise. Format with clear headings.
+            Keep the tone authoritative, technical, and concise. 
+            IMPORTANT: Do NOT use any markdown formatting. No bold (**), no headers (#). 
+            Use simple plain text for structure. Group information logically with line breaks.
         `;
 
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {

@@ -32,14 +32,8 @@ export default function AIResponseModal({ isOpen, onClose, response, assetName }
                 >
                     <div className="p-8 space-y-6">
                         <header className="flex justify-between items-start">
-                            <div>
-                                <h3 className="text-2xl font-black text-white uppercase tracking-tight flex items-center gap-3">
-                                    <Sparkles className="w-6 h-6 text-yellow-400 animate-pulse" />
-                                    AI <span className="text-neon-purple">Strategic</span> Response
-                                </h3>
-                                <p className="text-[10px] text-gray-500 font-mono tracking-widest mt-1 uppercase">
-                                    Strategic Mitigation for: <span className="text-white">{assetName}</span>
-                                </p>
+                            <div className="flex-1">
+                                {/* Text removed as per request */}
                             </div>
                             <button
                                 onClick={onClose}
@@ -49,10 +43,10 @@ export default function AIResponseModal({ isOpen, onClose, response, assetName }
                             </button>
                         </header>
 
-                        <div className="max-h-[60vh] overflow-y-auto no-scrollbar space-y-6 pr-4">
-                            <div className="prose prose-invert prose-xs max-w-none prose-p:text-gray-400 prose-headings:text-white prose-headings:font-black prose-headings:uppercase prose-headings:tracking-widest prose-headings:text-[11px] prose-strong:text-neon-purple">
-                                <div className="p-6 bg-white/[0.02] rounded-2xl border border-white/5 whitespace-pre-line leading-relaxed text-xs">
-                                    {response || "Generating tactical response..."}
+                        <div className="max-h-[60vh] overflow-y-auto no-scrollbar space-y-6 pr-4 flex flex-col items-center">
+                            <div className="prose prose-invert prose-xs max-w-none prose-p:text-gray-400 prose-headings:text-white prose-headings:font-black prose-headings:uppercase prose-headings:tracking-widest prose-headings:text-[11px] prose-strong:text-neon-purple w-full">
+                                <div className="p-8 bg-white/[0.04] rounded-[32px] border border-white/10 whitespace-pre-line leading-relaxed text-sm text-center shadow-inner">
+                                    {response ? response.replace(/\*\*/g, '').replace(/#+ /g, '').replace(/#+/g, '') : "Generating tactical response..."}
                                 </div>
                             </div>
 
