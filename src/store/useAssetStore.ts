@@ -18,6 +18,7 @@ interface AssetStore {
     updateAsset: (id: string, updates: Partial<Asset>) => void;
     recalculatePriority: () => void;
     syncWithCSV: () => Promise<void>;
+    isSyncing: boolean;
 }
 
 const statusProgressMap: Record<string, number> = {
@@ -30,11 +31,12 @@ const statusProgressMap: Record<string, number> = {
 
 export const useAssetStore = create<AssetStore>((set, get) => ({
     assets: [],
+    isSyncing: false,
     setAssets: (assets) => set({
         assets: assets.map(a => ({
             ...a,
             priority_score: a.priority_score || 0,
-            priority_rank: a.priority_rank || 0
+            priority_rank: (a as any).priority || a.priority_rank || 0
         }))
     }),
     updateAsset: (id, updates) => {
@@ -54,15 +56,20 @@ export const useAssetStore = create<AssetStore>((set, get) => ({
         get().syncWithCSV();
     },
     syncWithCSV: async () => {
+        set({ isSyncing: true });
         try {
             const assets = get().assets;
-            await fetch('/api/assets', {
+            const response = await fetch('/api/assets', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(assets),
             });
+            if (!response.ok) throw new Error('Sync failed');
         } catch (err) {
             console.error("Failed to sync with CSV:", err);
+            throw err;
+        } finally {
+            set({ isSyncing: false });
         }
     },
     recalculatePriority: () => {

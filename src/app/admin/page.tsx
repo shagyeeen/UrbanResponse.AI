@@ -7,7 +7,7 @@ import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 function AdminPanelContent() {
-    const { assets, updateAsset, recalculatePriority } = useAssetStore();
+    const { assets, updateAsset, recalculatePriority, syncWithCSV, isSyncing } = useAssetStore();
     const searchParams = useSearchParams();
     const highlightId = searchParams.get('id');
 
@@ -58,11 +58,20 @@ function AdminPanelContent() {
                         )}
                     </div>
                     <button
-                        onClick={() => recalculatePriority()}
-                        className="flex items-center gap-2 px-4 py-2 glass-card rounded-xl text-xs font-bold text-white hover:bg-purple-500/10 transition-all border-purple-500/20"
+                        onClick={async () => {
+                            recalculatePriority();
+                            try {
+                                await syncWithCSV();
+                                alert('Global Infrastructure Database Synchronized Successfully.');
+                            } catch (e) {
+                                alert('Synchronization Failed. Please check system logs.');
+                            }
+                        }}
+                        disabled={isSyncing}
+                        className={`flex items-center gap-2 px-4 py-2 glass-card rounded-xl text-xs font-bold text-white transition-all border-purple-500/20 group ${isSyncing ? 'opacity-50 cursor-wait' : 'hover:bg-neon-purple/20'}`}
                     >
-                        <RefreshCcw className="w-4 h-4 text-neon-purple" />
-                        Sync All
+                        <RefreshCcw className={`w-4 h-4 text-neon-purple ${isSyncing ? 'animate-spin' : 'group-active:rotate-180 transition-transform'}`} />
+                        {isSyncing ? 'Syncing...' : 'Sync All'}
                     </button>
                 </div>
             </div>
@@ -103,8 +112,8 @@ function AdminPanelContent() {
                                                 value={asset.status}
                                                 onChange={(e) => handleUpdate(asset.asset_id, 'status', e.target.value)}
                                                 className={`text-[10px] font-bold px-3 py-1.5 rounded-lg border appearance-none cursor-pointer focus:ring-0 focus:outline-none transition-all ${asset.status === 'Operational' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                                                        asset.status === 'Severely Damaged' ? 'bg-red-500/10 text-red-400 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.1)]' :
-                                                            'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
+                                                    asset.status === 'Severely Damaged' ? 'bg-red-500/10 text-red-400 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.1)]' :
+                                                        'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
                                                     }`}
                                             >
                                                 {statuses.map(s => <option key={s} value={s} className="bg-[#1A0B2E] text-white font-mono">{s}</option>)}

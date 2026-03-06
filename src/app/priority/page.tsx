@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import AIResponseModal from '@/components/dashboard/AIResponseModal';
+import { Brain } from 'lucide-react';
 
 export default function PriorityPage() {
     const { assets } = useAssetStore();
@@ -29,6 +31,12 @@ export default function PriorityPage() {
     const [groupBy, setGroupBy] = useState<'none' | 'type' | 'status'>('none');
     const itemsPerPage = 10;
 
+    // AI Response State
+    const [aiResponse, setAiResponse] = useState('');
+    const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedAssetName, setSelectedAssetName] = useState('');
+
     const handleSort = (field: string) => {
         if (sortField === field) {
             setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -37,6 +45,29 @@ export default function PriorityPage() {
             setSortOrder('desc');
         }
         setCurrentPage(1);
+    };
+
+    const handleGetAIResponse = async (asset: any) => {
+        setSelectedAssetName(asset.name);
+        setIsGeneratingAI(true);
+        setIsModalOpen(true);
+        setAiResponse('Initiating AI handshake with Groq Llama-3... Analyizing structural degradation patterns...');
+
+        try {
+            const res = await fetch('/api/ai-response', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ asset }),
+            });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            setAiResponse(data.response);
+        } catch (err) {
+            setAiResponse('Strategist Offline: Please ensure GROQ_API_KEY is configured in your system environment.');
+            console.error(err);
+        } finally {
+            setIsGeneratingAI(false);
+        }
     };
 
     const filteredAndSortedAssets = useMemo(() => {
@@ -95,55 +126,54 @@ export default function PriorityPage() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-8 flex flex-col gap-8">
-                    {/* Decision Logic Card */}
-                    <div className="glass-card p-10 rounded-3xl border-l-4 border-l-red-500 bg-red-500/5 relative overflow-hidden group">
-                        <TrendingUp className="w-24 h-24 text-red-500/5 absolute -bottom-6 -right-6 mix-blend-overlay" />
-                        <h3 className="text-xl font-black text-white uppercase mb-4 flex items-center gap-2">
-                            <Zap className="w-5 h-5 text-yellow-400" />
-                            AI Prioritization Engine
-                        </h3>
-                        <p className="text-sm text-gray-400 leading-relaxed max-w-2xl mb-6">
-                            Ranking is dynamically adjusted using a <strong className="text-white">70/30 weight</strong> between structural criticality and operational health.
-                            Assets with a Priority Index <span className="text-red-500">&gt; 85</span> trigger automatic resource dispatch warnings.
-                        </p>
-                        <div className="flex gap-3 font-mono text-[9px] uppercase tracking-wider">
-                            <div className="px-2 py-1 bg-white/5 rounded border border-white/10 text-gray-400">Sync: Local DB</div>
-                            <div className="px-2 py-1 bg-white/5 rounded border border-white/10 text-neon-purple">Algorithm: Weighted Risk</div>
-                        </div>
-                    </div>
-
-                    {/* Resource Distribution */}
-                    <div className="glass-card p-10 rounded-3xl relative overflow-hidden border border-white/5">
-                        <div className="absolute top-0 right-0 p-8 opacity-5">
-                            <Layers className="w-32 h-32" />
-                        </div>
-                        <h4 className="text-sm font-black text-white uppercase mb-8 tracking-widest">Active Fleet Allocation</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                            {[
-                                { label: 'Heavy Maintenance Units', value: 72, color: 'bg-neon-purple' },
-                                { label: 'Personnel Dispatch', value: 85, color: 'bg-red-500' },
-                            ].map((item) => (
-                                <div key={item.label} className="space-y-3">
-                                    <div className="flex justify-between text-[10px] uppercase font-mono text-gray-400">
-                                        <span>{item.label}</span>
-                                        <span className="text-white font-black">{item.value}%</span>
-                                    </div>
-                                    <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${item.value}%` }}
-                                            className={`h-full ${item.color} shadow-[0_0_10px_currentColor]`}
-                                        />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+            <div className="flex flex-col gap-8">
+                {/* Decision Logic Card */}
+                <div className="glass-card p-10 rounded-3xl border-l-4 border-l-red-500 bg-red-500/5 relative overflow-hidden group">
+                    <TrendingUp className="w-24 h-24 text-red-500/5 absolute -bottom-6 -right-6 mix-blend-overlay" />
+                    <h3 className="text-xl font-black text-white uppercase mb-4 flex items-center gap-2">
+                        <Zap className="w-5 h-5 text-yellow-400" />
+                        AI Prioritization Engine
+                    </h3>
+                    <p className="text-sm text-gray-400 leading-relaxed max-w-2xl mb-6">
+                        Ranking is dynamically adjusted using a <strong className="text-white">70/30 weight</strong> between structural criticality and operational health.
+                        Assets with a Priority Index <span className="text-red-500">&gt; 85</span> trigger automatic resource dispatch warnings.
+                    </p>
+                    <div className="flex gap-3 font-mono text-[9px] uppercase tracking-wider">
+                        <div className="px-2 py-1 bg-white/5 rounded border border-white/10 text-gray-400">Sync: Local DB</div>
+                        <div className="px-2 py-1 bg-white/5 rounded border border-white/10 text-neon-purple">Algorithm: Weighted Risk</div>
                     </div>
                 </div>
 
-                <div className="lg:col-span-4">
+                {/* Resource Distribution */}
+                <div className="glass-card p-10 rounded-3xl relative overflow-hidden border border-white/5">
+                    <div className="absolute top-0 right-0 p-8 opacity-5">
+                        <Layers className="w-32 h-32" />
+                    </div>
+                    <h4 className="text-sm font-black text-white uppercase mb-8 tracking-widest">Active Fleet Allocation</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        {[
+                            { label: 'Heavy Maintenance Units', value: 72, color: 'bg-neon-purple' },
+                            { label: 'Personnel Dispatch', value: 85, color: 'bg-red-500' },
+                        ].map((item) => (
+                            <div key={item.label} className="space-y-3">
+                                <div className="flex justify-between text-[10px] uppercase font-mono text-gray-400">
+                                    <span>{item.label}</span>
+                                    <span className="text-white font-black">{item.value}%</span>
+                                </div>
+                                <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${item.value}%` }}
+                                        className={`h-full ${item.color} shadow-[0_0_10px_currentColor]`}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Priority Panel - Moved Below and Full Width */}
+                <div className="w-full">
                     <PriorityPanel />
                 </div>
             </div>
@@ -246,8 +276,8 @@ export default function PriorityPage() {
                                                         </td>
                                                         <td className="p-5">
                                                             <span className={`text-[9px] font-bold px-2 py-0.5 rounded border ${asset.status.toLowerCase().includes('operational') ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                                                                    asset.status.toLowerCase().includes('severely') ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                                        'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
+                                                                asset.status.toLowerCase().includes('severely') ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                                                    'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
                                                                 }`}>
                                                                 {asset.status}
                                                             </span>
@@ -269,12 +299,22 @@ export default function PriorityPage() {
                                                             </span>
                                                         </td>
                                                         <td className="p-5 text-right">
-                                                            <Link
-                                                                href={`/admin?id=${asset.asset_id}`}
-                                                                className="px-4 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[9px] font-black uppercase tracking-widest text-gray-400 hover:bg-neon-purple hover:text-white transition-all whitespace-nowrap"
-                                                            >
-                                                                Override
-                                                            </Link>
+                                                            <div className="flex items-center justify-end gap-3">
+                                                                <button
+                                                                    onClick={() => handleGetAIResponse(asset)}
+                                                                    disabled={isGeneratingAI}
+                                                                    className="px-4 py-1.5 rounded-lg bg-neon-purple/5 border border-neon-purple/20 text-[9px] font-black uppercase tracking-widest text-neon-purple hover:bg-neon-purple hover:text-white transition-all flex items-center gap-2 group/ai"
+                                                                >
+                                                                    <Brain className="w-3 h-3 group-hover/ai:animate-pulse" />
+                                                                    AI Respond
+                                                                </button>
+                                                                <Link
+                                                                    href={`/admin?id=${asset.asset_id}`}
+                                                                    className="px-4 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[9px] font-black uppercase tracking-widest text-gray-400 hover:bg-neon-purple hover:text-white transition-all whitespace-nowrap"
+                                                                >
+                                                                    Override
+                                                                </Link>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -335,6 +375,13 @@ export default function PriorityPage() {
                     })}
                 </div>
             </div>
+
+            <AIResponseModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                response={aiResponse}
+                assetName={selectedAssetName}
+            />
         </div>
     );
 }

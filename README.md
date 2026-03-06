@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏙️ UrbanResponse.AI
 
-## Getting Started
+![UrbanResponse.AI Banner](/public/assets/banner.png)
 
-First, run the development server:
+> **"Redefining Urban Resilience through Intelligent Telemetry & AI-Driven Response."**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+[![Next.js](https://img.shields.io/badge/Next.js-15+-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.0-ff0055?style=for-the-badge&logo=framer&logoColor=white)](https://www.framer.com/motion/)
+[![Groq AI](https://img.shields.io/badge/Groq-AI_Powered-f55036?style=for-the-badge&logo=lightning&logoColor=white)](https://groq.com/)
+
+---
+
+## 🌟 The Vision
+
+**UrbanResponse.AI** is a futuristic, holographic command center designed for the City of Chennai. It transforms raw infrastructure data into actionable strategic insights, enabling rapid response to urban decay, traffic congestion, and critical utility failures.
+
+Built with a **Cyber-Premium aesthetic**, the platform utilizes real-time telemetry and advanced LLM reasoning (powered by Groq) to prioritize incidents and allocate resources where they are needed most.
+
+---
+
+## 🚀 Core Pillars
+
+### 📊 Strategic Command Dashboard
+A high-fidelity interface providing granular visibility into:
+- **Infrastructure Sectors**: Bridges, Roadways, Drainage, Pipelines, and Lighting.
+- **Real-time Telemetry**: Active response status and health metrics.
+- **Global Status Monitoring**: System-wide scans with immediate alert capabilities.
+
+### 🧬 AI-Driven Prioritization
+Leveraging **Groq's LPU™ technology**, UrbanResponse.AI autonomously evaluates incident gravity based on:
+- Population density impact.
+- Cascading failure risks.
+- Fleet proximity and response time.
+
+### 🗺️ Geospatial Intelligence
+Interactive **Heatmaps** and **Spatial Risk Overlays** visualize the city's pulse, highlighting critical zones and allowing for predictive maintenance.
+
+---
+
+## 🛠️ Tech Architecture
+
+```mermaid
+graph TD
+    A[Public Data / CSV] -->|PapaParse| B(Zustand Store)
+    B --> C{Strategic Router}
+    C --> D[Chennai Ops Dashboard]
+    C --> E[AI Priority Hub]
+    C --> F[Spatial Heatmap]
+    G[Groq API] <-->|LLM Reasoning| E
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ Getting Started
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Prerequisites
+- Node.js 18+
+- Groq API Key (for intelligent insights)
 
-## Learn More
+### Installation
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/shagyeeen/UrbanResponse.AI.git
+   cd urban-response-ai
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Configure Environment**:
+   Create a `.env.local` file in the root directory:
+   ```env
+   GROQ_API_KEY=your_actual_key_here
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Launch the Engine**:
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+Open [http://localhost:3000](http://localhost:3000) to enter the command center.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛣️ Roadmap
+
+- [ ] **Phase 1**: Real-time Sensor Integration (IoT).
+- [ ] **Phase 2**: Mobile Response App for Field Units.
+- [ ] **Phase 3**: Predictive Crisis Simulation Engine.
+- [ ] **Phase 4**: Multi-City Support for Global Urban Mobility.
+
+---
+
+## 🛡️ Security & Compliance
+
+UrbanResponse.AI is designed with **Privacy-First** principles. All infrastructure telemetry is handled securely, ensuring city data remains protected while enabling efficient public service delivery.
+
+---
+
+<p align="center">
+  Developed with ❤️ for the Future of Chennai.
+</p>

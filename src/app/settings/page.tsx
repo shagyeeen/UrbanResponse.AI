@@ -3,11 +3,14 @@
 import { motion } from 'framer-motion';
 import { Settings, Save, RefreshCcw, Bell, Shield, Zap, Info } from 'lucide-react';
 import { useState } from 'react';
+import { useAssetStore } from '@/store/useAssetStore';
 
 export default function SettingsPage() {
     const [syncFreq, setSyncFreq] = useState('15s');
     const [threshold, setThreshold] = useState(80);
     const [notifications, setNotifications] = useState(true);
+
+    const { syncWithCSV, isSyncing } = useAssetStore();
 
     return (
         <div className="space-y-12 pb-32">
@@ -19,9 +22,20 @@ export default function SettingsPage() {
                     </h2>
                     <p className="text-[10px] text-gray-400 font-mono tracking-widest mt-1 uppercase">CONTROL CENTER | CONFIGURATION PANEL v1.4</p>
                 </div>
-                <button className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-neon-purple text-white text-xs font-bold uppercase tracking-widest hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all active:scale-95">
-                    <Save className="w-4 h-4" />
-                    Save Changes
+                <button
+                    onClick={async () => {
+                        try {
+                            await syncWithCSV();
+                            alert('All system configurations and data have been committed to the secure database.');
+                        } catch (e) {
+                            alert('Database commit failed. Please check network connectivity.');
+                        }
+                    }}
+                    disabled={isSyncing}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-full bg-neon-purple text-white text-xs font-bold uppercase tracking-widest hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all active:scale-95 ${isSyncing ? 'opacity-50 cursor-wait' : ''}`}
+                >
+                    <Save className={`w-4 h-4 ${isSyncing ? 'animate-pulse' : ''}`} />
+                    {isSyncing ? 'Syncing...' : 'Save Changes'}
                 </button>
             </header>
 
